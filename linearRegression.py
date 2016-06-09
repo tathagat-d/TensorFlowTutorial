@@ -3,6 +3,15 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
+'''
+Help:
+    a. Assumption: that data is best represented as a straight line.
+    b. We compute the outcome(y) and compare it with known outcome(y_data)
+       to identify errors.
+    c. Convex function: least squared error is used to represent error.
+    d. Errors are minimized using greedy algorithm: GradientDescentOptimizer
+'''
+
 #--------------------GET DATA------------------------#
 def load(fname):
     '''Read data one line at a time into a list '''
@@ -73,4 +82,5 @@ for x in range(1000):
         plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
                 %(session.run(m),session.run(c)))
         plt.show()
+session.close()
 #---------------E-O-EXECUTION-------------------------#
