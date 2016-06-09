@@ -1,8 +1,11 @@
+#!/usr/bin/python
+
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
 #--------------------GET DATA------------------------#
-def getData(fname):
+def load(fname):
+    '''Read data one line at a time into a list '''
     fhand = open(fname, 'r')
     x_data= list()
     y_data= list()
@@ -22,7 +25,24 @@ def getData(fname):
 #--------------------GET DATA------------------------#
 
 # get data
-x_data, y_data = getData('data1.txt')
+x_data, y_data = load('data1.txt')
+
+#------------------INITIALIZATION--------------------#
+m = tf.Variable(0.0)
+c = tf.Variable(0.0)
+
+# Hypothesis: We assume that our data represents a
+# straight line
+y = m * x_data + c
+
+# Cost function
+loss = tf.reduce_mean(tf.square(y - y_data))
+
+# Learning rate alpha is result of experimentation
+alpha = 0.008
+optimizer = tf.train.GradientDescentOptimizer(alpha)
+train = optimizer.minimize(loss)
+#-----------------E-O-INITIALIZATION------------------#
 
 # Spread of data in two dimension
 plt.xlabel('x')
@@ -30,29 +50,17 @@ plt.ylabel('y')
 plt.plot(x_data, y_data, 'go')
 plt.show()
 
-#------------------INITIALIZATION--------------------#
-m = tf.Variable(0.0)
-c = tf.Variable(0.0)
-
-# Hypothesis
-y = m * x_data + c
-
-# Cost function
-loss = tf.reduce_mean(tf.square(y - y_data))
-
-alpha = 0.008
-optimizer = tf.train.GradientDescentOptimizer(alpha)
-train = optimizer.minimize(loss)
-#-----------------E-O-INITIALIZATION------------------#
-
+#-------------------EXECUTION-------------------------#
 session = tf.Session()
 session.run(tf.initialize_all_variables())
+
 # Initial State
 plt.xlabel('x')
 plt.ylabel('y')
 plt.plot(x_data, y_data, 'go')
 plt.plot(x_data, session.run(y))
-plt.text(15, -4, 'slope = %.2f\nconst = %.2f'%(session.run(m),session.run(c)))
+plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
+        %(session.run(m),session.run(c)))
 plt.show()
 
 for x in range(1000):
@@ -65,3 +73,4 @@ for x in range(1000):
         plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
                 %(session.run(m),session.run(c)))
         plt.show()
+#---------------E-O-EXECUTION-------------------------#
