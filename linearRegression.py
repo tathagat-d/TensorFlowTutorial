@@ -72,15 +72,15 @@ plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
         %(session.run(m),session.run(c)))
 plt.show()
 
-for x in range(1000):
+for x in range(1500):
     session.run(train)
     if not x % 100:
         plt.xlabel('x')
         plt.ylabel('y')
         plt.plot(x_data, y_data, 'go')
         plt.plot(x_data, session.run(y))
-        plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
-                %(session.run(m),session.run(c)))
+        plt.text(15, -4, 'slope = %.2f\nconst = %.2f\nloss = %.2f'
+                %(session.run(m),session.run(c), session.run(loss)))
         plt.show()
 session.close()
 #---------------E-O-EXECUTION-------------------------#
