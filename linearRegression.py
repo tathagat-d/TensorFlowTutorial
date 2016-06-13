@@ -35,6 +35,12 @@ def load(fname):
 
 # get data
 x_data, y_data = load('data1.txt')
+# Spread of data in two dimension
+plt.title('Data Spread')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.plot(x_data, y_data, 'go')
+plt.show()
 
 #------------------INITIALIZATION--------------------#
 m = tf.Variable(0.0)
@@ -53,17 +59,18 @@ optimizer = tf.train.GradientDescentOptimizer(alpha)
 train = optimizer.minimize(loss)
 #-----------------E-O-INITIALIZATION------------------#
 
-# Spread of data in two dimension
-plt.xlabel('x')
-plt.ylabel('y')
-plt.plot(x_data, y_data, 'go')
-plt.show()
 
 #-------------------EXECUTION-------------------------#
 session = tf.Session()
 session.run(tf.initialize_all_variables())
 
-# Initial State
+cost = list()
+for x in range(1500):
+    session.run(train)
+    cost.append(session.run(loss))
+
+#---------------E-O-EXECUTION-------------------------#
+plt.title('Best Fit')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.plot(x_data, y_data, 'go')
@@ -72,15 +79,12 @@ plt.text(15, -4, 'slope = %.2f\nconst = %.2f'
         %(session.run(m),session.run(c)))
 plt.show()
 
-for x in range(1500):
-    session.run(train)
-    if not x % 100:
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.plot(x_data, y_data, 'go')
-        plt.plot(x_data, session.run(y))
-        plt.text(15, -4, 'slope = %.2f\nconst = %.2f\nloss = %.2f'
-                %(session.run(m),session.run(c), session.run(loss)))
-        plt.show()
+plt.title('Convergence Graph')
+plt.xlabel('iteration')
+plt.ylabel('cost')
+iteration = range(1500)
+plt.plot(iteration, cost, 'r')
+plt.show()
+
+#---------------E-O-SESSION----------------------------#
 session.close()
-#---------------E-O-EXECUTION-------------------------#
