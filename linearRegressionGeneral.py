@@ -62,7 +62,7 @@ featureScale(x_data)
 #------------------INITIALIZATION--------------------#
 theta     = tf.Variable([[1.0, 2.0, 3.0]])
 features  = tf.Variable(x_data)
-y_data    = tf.Variable(list(y_data))
+y_data    = tf.Variable([list(y_data)])
 
 # Hypothesis: We assume that our data represents a straight line
 y = tf.matmul(theta, features, transpose_a = False, transpose_b = True)
@@ -84,6 +84,8 @@ cost = list()
 for x in range(51):
     session.run(train)
     cost.append(session.run(loss))
+
+print session.run(theta)
 #---------------E-O-EXECUTION-------------------------#
 plt.title('Convergence Graph')
 plt.xlabel('iteration')
@@ -92,4 +94,9 @@ iteration = range(51)
 plt.plot(iteration, cost, 'r')
 plt.show()
 #---------------E-O-SESSION----------------------------#
+# Using Normal Equation as the data size is small
+theta = tf.matmul(
+            tf.matrix_inverse(tf.matmul(features, features, transpose_a = True)),
+            tf.matmul(features, y_data, transpose_a = True, transpose_b = True))
+print session.run(theta)
 session.close()
