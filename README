@@ -1,3 +1,7 @@
 Teaching Myself TensorFlow.
 Starting material will be from the official website of tensorflow.
 Following examples will be implementation of 'well known' models of machine learning.
+
+1. Linear Regression with one features
+2. Linear Regression with multiple features.
+3. Logistic Regression: Sigmoid Functions.
