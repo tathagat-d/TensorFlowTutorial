@@ -81,14 +81,14 @@ session = tf.Session()
 session.run(tf.initialize_all_variables())
 
 cost = list()
-for x in range(30):
+for x in range(51):
     session.run(train)
     cost.append(session.run(loss))
 #---------------E-O-EXECUTION-------------------------#
 plt.title('Convergence Graph')
 plt.xlabel('iteration')
 plt.ylabel('cost')
-iteration = range(30)
+iteration = range(51)
 plt.plot(iteration, cost, 'r')
 plt.show()
 #---------------E-O-SESSION----------------------------#
