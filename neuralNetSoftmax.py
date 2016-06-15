@@ -1,17 +1,23 @@
-import tensorflow as tf
+#!/usr/bin/python
 
 '''
-Note: We basically are computing probabiltiy of image belonging to
+We basically are computing probabiltiy of image belonging to
 each class using neural network.
 y = softmax(Wx + b)
 '''
 
-# None corresponds to unknown number of images with 784 columns.
-# Each pixel is represented with type float.
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
+
+# Download the data and put it into mnist data structure.
+mnist = input_data.read_data_sets("MNIST/", one_hot = True)
+
+# variable x represents input images.
+# 'None' corresponds to unknown number of images with 784 columns.
 x = tf.placeholder(tf.float32, [None, 784])
 
-# Hypothesis/Model
 # Each pixel contributing[positively or negatively] to 10 classes.
+# Initialized to zero.
 W = tf.Variable(tf.zeros(shape = [784, 10]))
 
 # Contribution independent of the input image to a class.
@@ -36,10 +42,14 @@ optimizer = tf.train.GradientDescentOptimizer(alpha)
 train = optimizer.minimize(cost)
 
 #===================== End Of Graph Declaration ===============================#
+'''
+Execution:
+Supplying data to placeholders and executing the DAG in tensorflow
+'''
 init = tf.initialize_all_variables()
 session = tf.Session()
 # All variables are now initialized.
-session = tf.run(init)
+session.run(init)
 # Execute the training:
 # Note: Number of iteration is through experimentation.
 # Choosing stochastic gradient descent over batch gradient descent.
@@ -47,3 +57,19 @@ for i in range(1000):
     # Conquering the task, 100 examples at a time.[for 1000 times]
     batch_xs, batch_ys = mnist.train.next_batch(100)
     session.run(train, feed_dict = {x: batch_xs, y_data: batch_ys})
+
+#========================= Model Evaluation ===================================#
+'''
+Ranking:
+Effeciency of our model 
+'''
+# Number of images correctly classified
+correct_prediction = tf.equal(tf.argmax(y, 1), tf.arg_max(y_data, 1))
+# Converting boolean to 1's and 0's
+correct_prediction = tf.cast(correct_prediction, tf.float32)
+accuracy = tf.reduce_mean(correct_prediction)
+
+# Printing the accuracy on test data set
+print 'Accuracy obtained on test data:',
+print session.run(accuracy, feed_dict = {x : mnist.test.images, y_data : mnist.test.labels})
+#============================ E O Program  ====================================#
