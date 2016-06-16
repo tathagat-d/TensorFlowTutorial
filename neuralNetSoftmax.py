@@ -1,9 +1,11 @@
 #!/usr/bin/python
 
 '''
-We basically are computing probabiltiy of image belonging to
-each class using neural network.
+We basically are computing probabiltiy of image belonging to each 
+class using neural network.
 y = softmax(Wx + b)
+There are no hidden layer in this model. Just one input and one
+output layer.
 '''
 
 import tensorflow as tf
@@ -64,6 +66,8 @@ Ranking:
 Effeciency of our model 
 '''
 # Number of images correctly classified
+# tf.argmax gives the index where the probability was maximum. Then we match it
+# with the index of known result. Count of such matches are correct predictions.
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.arg_max(y_data, 1))
 # Converting boolean to 1's and 0's
 correct_prediction = tf.cast(correct_prediction, tf.float32)

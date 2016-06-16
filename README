@@ -4,4 +4,4 @@ Following examples will be implementation of 'well known' models of machine lear
 
 1. Linear Regression with one features
 2. Linear Regression with multiple features.
-3. Logistic Regression: Sigmoid Functions.
+3. Logistic Regression: Sigmoid Functions for MNIST
