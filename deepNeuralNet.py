@@ -61,7 +61,7 @@ W_conv2 = initializeWeight([5, 5, 32, 64])
 b_conv2 = initializeBias([64])
 
 # Getting the output ready for next Layer
-h_conv2 = tf.nn.relu(conv2D(x_image, W_conv2) + b_conv2)
+h_conv2 = tf.nn.relu(conv2D(h_pool1, W_conv2) + b_conv2)
 h_pool2 = maxPool2X2(h_conv2)
 
 # Final Layer
@@ -108,6 +108,8 @@ for i in range(20000):
         print("step %d, training accuracy %g" % (i, train_accuracy))
     session.run(train_step, feed_dict={ x : batch[0], y_ : batch[1], keep_prob: 0.5})
 
-print("test_accuracy %g" % session.run(accuracy, feed_dict= {
-    x : mnist.test.images, y_ : mnist.test.labels, keep_prob: 1.0}))
+# Not having enough memory to evaluate the entire test dataset.
+#print("test_accuracy %g" % session.run(accuracy, feed_dict= {
+#    x : mnist.test.images, y_ : mnist.test.labels, keep_prob: 1.0}))
 #=============================================================================#
+session.close()
