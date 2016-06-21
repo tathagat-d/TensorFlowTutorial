@@ -91,8 +91,8 @@ cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv),
 
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+score = tf.cast(correct_prediction, tf.float32)
+accuracy = tf.reduce_mean(score)
 
 #=============================================================================#
 
@@ -108,8 +108,11 @@ for i in range(20000):
         print("step %d, training accuracy %g" % (i, train_accuracy))
     session.run(train_step, feed_dict={ x : batch[0], y_ : batch[1], keep_prob: 0.5})
 
-# Not having enough memory to evaluate the entire test dataset.
-#print("test_accuracy %g" % session.run(accuracy, feed_dict= {
-#    x : mnist.test.images, y_ : mnist.test.labels, keep_prob: 1.0}))
+count = list()
+for i in range(1000):
+    count.extend(session.run(score, feed_dict = { x : mnist.test.images[i * 100: i * 100 + 100],
+        y_ : mnist.test.labels[i*100: i * 100 + 100], keep_prob: 1.0}))
+count = tf.reduce_mean(count)
+print("test accuracy %g" % session.run(count))
 #=============================================================================#
 session.close()
