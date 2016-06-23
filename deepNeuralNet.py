@@ -11,15 +11,6 @@ step size   : 1
 patch size  : 2 * 2
 '''
 
-import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
-# Data structure containing all the input
-mnist = input_data.read_data_sets("MNIST", one_hot=True)
-
-# Input and Output
-x = tf.placeholder(tf.float32, shape=[None, 784])
-y_ = tf.placeholder(tf.float32, shape=[None, 10])
-
 # Initializing internal data structure to tensorflow. [ weights and biases ]
 #=============================================================================#
 def initializeWeight(shape):
@@ -41,8 +32,18 @@ def maxPool2X2(x):
             padding='SAME')
 #=============================================================================#
 
+# Load Data
+import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
+# Data structure containing all the input
+mnist = input_data.read_data_sets("MNIST", one_hot=True)
+
 # Network Design
 #=============================================================================#
+# Input and Output
+x = tf.placeholder(tf.float32, shape=[None, 784])
+y_ = tf.placeholder(tf.float32, shape=[None, 10])
+
 # Transforming input data for first layer
 x_image = tf.reshape(x, [-1, 28, 28, 1])
 
@@ -95,20 +96,16 @@ y_conv = tf.nn.softmax(tf.matmul(h_final2, W_final2) + b_final2)
 
 # Training the model
 # Cost Function
-cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv),
-                reduction_indices=[1]))
-
-train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
-score = tf.cast(correct_prediction, tf.float32)
-accuracy = tf.reduce_mean(score)
+cross_entropy       = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y_conv),
+                        reduction_indices=[1]))
+train_step          = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
+correct_prediction  = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
+score               = tf.cast(correct_prediction, tf.float32)
+accuracy            = tf.reduce_mean(score)
 
 #=============================================================================#
 
-session = tf.Session()
-session.run(tf.initialize_all_variables())
-
-def train():
+def train(session):
     #Iterating 20,000 times with hope that we will converge
     for i in range(20000):
         batch = mnist.train.next_batch(50)
@@ -116,17 +113,23 @@ def train():
             train_accuracy = session.run(accuracy, feed_dict= {
                 x:batch[0], y_ : batch[1], keep_prob: 1.0})
             print("step %d, training accuracy %g" % (i, train_accuracy))
-        session.run(train_step, feed_dict={ x : batch[0], y_ : batch[1], keep_prob: 0.5})
+        session.run(train_step,
+                feed_dict = { x : batch[0], y_ : batch[1], keep_prob: 0.5 })
 
-def test():
+def test(session):
     count = list()
     for i in range(1000):
-        count.extend(session.run(score, feed_dict = { x : mnist.test.images[i * 100: i * 100 + 100],
-            y_ : mnist.test.labels[i*100: i * 100 + 100], keep_prob: 1.0}))
+        count.extend(session.run(score, feed_dict = {
+            x : mnist.test.images[i * 100: i * 100 + 100],
+            y_ : mnist.test.labels[i*100: i * 100 + 100],
+            keep_prob: 1.0}
+        ))
     count = tf.reduce_mean(count)
     print("test accuracy %g" % session.run(count))
 
-train()
-test()
+session = tf.Session()
+session.run(tf.initialize_all_variables())
+train(session)
+test(session)
 #=============================================================================#
 session.close()
