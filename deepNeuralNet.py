@@ -52,7 +52,9 @@ W_conv1 = initializeWeight([5, 5, 1, 32])
 b_conv1 = initializeBias([32])
 
 # Getting the output ready for next Layer
+# Dimension: [None, 28, 28, 32]
 h_conv1 = tf.nn.relu(conv2D(x_image, W_conv1) + b_conv1)
+# Dimension: [None, 14, 14, 32]
 h_pool1 = maxPool2X2(h_conv1)
 
 #Weights and Biases window for Second Layer
@@ -61,23 +63,30 @@ W_conv2 = initializeWeight([5, 5, 32, 64])
 b_conv2 = initializeBias([64])
 
 # Getting the output ready for next Layer
+# Dimension: [None, 14, 14, 64]
 h_conv2 = tf.nn.relu(conv2D(h_pool1, W_conv2) + b_conv2)
+# Dimension: [None, 7, 7, 64]
 h_pool2 = maxPool2X2(h_conv2)
 
 # Final Layer
+# Dimension: [3136, 1024]
 W_final1 = initializeWeight([7 * 7 * 64, 1024])
 b_final1 =initializeBias([1024])
 
 # Reshaping input Layer for the final layer
+# Dimension: [None, 3136]
 h_pool = tf.reshape(h_pool2, [-1, 7 * 7 * 64])
+# Dimension: [None, 1024]
 h_final1 = tf.nn.relu(tf.matmul(h_pool, W_final1) + b_final1)
 #=============================================================================#
 
 # Avoiding Overfitting
 keep_prob = tf.placeholder(tf.float32)
+# Dimension: [None, 1024]
 h_final2 = tf.nn.dropout(h_final1, keep_prob)
 
 #Applying softmax to generate probabilities
+# Dimension: [1024, 10]
 W_final2 = initializeWeight([1024, 10])
 b_final2 = initializeBias([10])
 
@@ -99,20 +108,25 @@ accuracy = tf.reduce_mean(score)
 session = tf.Session()
 session.run(tf.initialize_all_variables())
 
-#Iterating 20,000 times with hope that we will converge
-for i in range(20000):
-    batch = mnist.train.next_batch(50)
-    if not i %100:
-        train_accuracy = session.run(accuracy, feed_dict= {
-            x:batch[0], y_ : batch[1], keep_prob: 1.0})
-        print("step %d, training accuracy %g" % (i, train_accuracy))
-    session.run(train_step, feed_dict={ x : batch[0], y_ : batch[1], keep_prob: 0.5})
+def train():
+    #Iterating 20,000 times with hope that we will converge
+    for i in range(20000):
+        batch = mnist.train.next_batch(50)
+        if not i %100:
+            train_accuracy = session.run(accuracy, feed_dict= {
+                x:batch[0], y_ : batch[1], keep_prob: 1.0})
+            print("step %d, training accuracy %g" % (i, train_accuracy))
+        session.run(train_step, feed_dict={ x : batch[0], y_ : batch[1], keep_prob: 0.5})
 
-count = list()
-for i in range(1000):
-    count.extend(session.run(score, feed_dict = { x : mnist.test.images[i * 100: i * 100 + 100],
-        y_ : mnist.test.labels[i*100: i * 100 + 100], keep_prob: 1.0}))
-count = tf.reduce_mean(count)
-print("test accuracy %g" % session.run(count))
+def test():
+    count = list()
+    for i in range(1000):
+        count.extend(session.run(score, feed_dict = { x : mnist.test.images[i * 100: i * 100 + 100],
+            y_ : mnist.test.labels[i*100: i * 100 + 100], keep_prob: 1.0}))
+    count = tf.reduce_mean(count)
+    print("test accuracy %g" % session.run(count))
+
+train()
+test()
 #=============================================================================#
 session.close()
